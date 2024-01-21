@@ -1,4 +1,4 @@
-![render](https://github.com/nkr38/Autonomous_Cat_Deterrence/assets/69133832/7a802287-cad0-42df-8e41-28bd945d1995)
+<img src="https://github.com/nkr38/Autonomous_Cat_Deterrence/assets/69133832/7a802287-cad0-42df-8e41-28bd945d1995" alt="render" width="50%">
 # Autonomous Cat Deterrence
 
 Welcome to the repository for the Autonomous Cat Deterrence senior design group project.
