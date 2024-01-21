@@ -1,3 +1,4 @@
+![render](https://github.com/nkr38/Autonomous_Cat_Deterrence/assets/69133832/7a802287-cad0-42df-8e41-28bd945d1995)
 # Autonomous Cat Deterrence
 
 Welcome to the repository for the Autonomous Cat Deterrence senior design group project.
@@ -17,7 +18,7 @@ The project aims to autonomously detect and deter cats using the YOLOv8 object d
 ```plaintext
 /
 |-- src/
-|   |-- main.py
+|   |-- yolov8_webcam.py
 |-- models/
 |   |-- yolov8n.pt
 |-- images/
@@ -53,10 +54,6 @@ The project aims to autonomously detect and deter cats using the YOLOv8 object d
    ```
 ## Dependencies
 - YOLOv8: Ultralytics YOLO
-  
-## Screenshots/Images
-![alt text]([https://github.com/nkr38/Autonomous_Cat_Deterrence/images/render.png?raw=true)
-![alt text]([https://github.com/nkr38/Autonomous_Cat_Deterrence/images/kitchenrender.png?raw=true)
 
 ## Acknowledgments
 Ultralytics YOLO for providing the YOLOv8 model
