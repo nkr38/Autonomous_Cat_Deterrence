@@ -20,9 +20,13 @@ while cap.isOpened():
     if success:
         # Run YOLOv8 inference on the frame
         results = model(frame, verbose= False, conf = .80)
+
+        # Gather results
         boxes = results[0].boxes.xywh.cpu()
         clss = results[0].boxes.cls.cpu().tolist()
         confs = results[0].boxes.conf.float().cpu().tolist()
+
+        # Find index of cat in list of class detections
         cat_index = clss.index(15) if 15 in clss else None
 
         if cat_index is not None:
