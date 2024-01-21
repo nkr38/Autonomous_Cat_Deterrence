@@ -47,13 +47,13 @@ The project aims to autonomously detect and deter cats using the YOLOv8 object d
    cd Autonomous_Cat_Deterrence
    ```
 3. Run the script:
-  ```bash
-  Copy code
-  python src/main.py
-  ```
+   ```bash
+   Copy code
+   python src/main.py
+   ```
 ## Dependencies
 - YOLOv8: Ultralytics YOLO
-- 
+  
 ## Screenshots/Images
 ![alt text]([https://github.com/nkr38/Autonomous_Cat_Deterrence/images/render.png?raw=true)
 ![alt text]([https://github.com/nkr38/Autonomous_Cat_Deterrence/images/kitchenrender.png?raw=true)
