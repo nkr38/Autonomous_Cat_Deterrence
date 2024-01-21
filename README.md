@@ -42,18 +42,16 @@ The project aims to autonomously detect and deter cats using the YOLOv8 object d
 
 1. Clone the repository:
 
-   ```bash
+   ```bash copy code
    git clone https://github.com/yourusername/Autonomous_Cat_Deterrence.git
    ```
 2. Navigate to the project directory:
-   ```bash
-   Copy code
+   ```bash copy code
    cd Autonomous_Cat_Deterrence
    ```
 3. Run the script:
-   ```bash
-   Copy code
-   python src/main.py
+   ```bash copy code
+   python yolov8_webcam.py
    ```
 ## Dependencies
 - YOLOv8: Ultralytics YOLO
