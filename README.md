@@ -1,4 +1,7 @@
-<img src="https://github.com/nkr38/Autonomous_Cat_Deterrence/assets/69133832/7a802287-cad0-42df-8e41-28bd945d1995" alt="render" width="50%">
+<div style="text-align: center;">
+  <img src="https://github.com/nkr38/Autonomous_Cat_Deterrence/assets/69133832/7a802287-cad0-42df-8e41-28bd945d1995" alt="render" width="50%">
+</div>
+
 # Autonomous Cat Deterrence
 
 Welcome to the repository for the Autonomous Cat Deterrence senior design group project.
@@ -60,4 +63,4 @@ Ultralytics YOLO for providing the YOLOv8 model
 
 ## Contact Information
 For any inquiries, please contact:
-Email: nkr38@drexel.edu
+ nkr38@drexel.edu
