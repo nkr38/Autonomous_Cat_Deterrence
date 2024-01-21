@@ -55,8 +55,8 @@ The project aims to autonomously detect and deter cats using the YOLOv8 object d
 - YOLOv8: Ultralytics YOLO
 - 
 ## Screenshots/Images
-![alt text]([https://github.com/nkr38/Autonomous_Cat_Deterrence/render.png?raw=true)
-![alt text]([https://github.com/nkr38/Autonomous_Cat_Deterrence/kitchenrender.png?raw=true)
+![alt text]([https://github.com/nkr38/Autonomous_Cat_Deterrence/images/render.png?raw=true)
+![alt text]([https://github.com/nkr38/Autonomous_Cat_Deterrence/images/kitchenrender.png?raw=true)
 
 ## Acknowledgments
 Ultralytics YOLO for providing the YOLOv8 model
