@@ -1,4 +1,7 @@
 # FROM https://colab.research.google.com/github/edgeimpulse/notebooks/blob/main/notebooks/object-counting-using-fomo.ipynb#scrollTo=57dPBIW6Wwsv
+# IF you get an error saying "model not executable"
+# run chmod u+x modelfile.eim
+
 
 import cv2
 import os
