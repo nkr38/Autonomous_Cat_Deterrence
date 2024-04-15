@@ -2,20 +2,25 @@ from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput
 from picamera2 import Picamera2
 import numpy as np
+import datetime
 from pathlib import Path
 
 
 class Camera:
     def __init__(
         self,
-        outpath: str | Path = "test.mp4",
         main_size: tuple[int] = (1920, 1080),
         lores_size: tuple[int] = (192, 108),
         model_input_size: tuple[int] = (96, 96),
     ): 
         self.picam2 = Picamera2()
         self.encoder = H264Encoder()
-        self.output = FfmpegOutput(outpath)
+
+        now = datetime.datetime.now().strftime("%H-%M-%S_%d-%m-%Y")
+        if Path("/media/raspi/catdrive/").is_dir():
+            self.output = FfmpegOutput(f"/media/raspi/catdrive/vid_{now}.mp4")
+        else:
+            self.output = FfmpegOutput(f"vid_{now}.mp4")
         
         self.main_size = main_size
         self.lores_size = lores_size
