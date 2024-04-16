@@ -1,0 +1,94 @@
+[0:00:34.545222219] [3954] [1;32m INFO [1;37mCamera [1;34mcamera_manager.cpp:284 [0mlibcamera v0.1.0+118-563cd78e
+[0:00:34.591639904] [3958] [1;33m WARN [1;37mRPiSdn [1;34msdn.cpp:39 [0mUsing legacy SDN tuning - please consider moving SDN inside rpi.denoise
+[0:00:34.594264015] [3958] [1;32m INFO [1;37mRPI [1;34mvc4.cpp:444 [0mRegistered camera /base/soc/i2c0mux/i2c@1/imx708@1a to Unicam device /dev/media0 and ISP device /dev/media1
+[0:00:34.594358478] [3958] [1;32m INFO [1;37mRPI [1;34mpipeline_base.cpp:1142 [0mUsing configuration file '/usr/share/libcamera/pipeline/rpi/vc4/rpi_apps.yaml'
+[0:00:34.598375496] [3954] [1;32m INFO [1;37mCamera [1;34mcamera_manager.cpp:284 [0mlibcamera v0.1.0+118-563cd78e
+[0:00:34.642990144] [3961] [1;33m WARN [1;37mRPiSdn [1;34msdn.cpp:39 [0mUsing legacy SDN tuning - please consider moving SDN inside rpi.denoise
+[0:00:34.645417422] [3961] [1;32m INFO [1;37mRPI [1;34mvc4.cpp:444 [0mRegistered camera /base/soc/i2c0mux/i2c@1/imx708@1a to Unicam device /dev/media0 and ISP device /dev/media1
+[0:00:34.645505237] [3961] [1;32m INFO [1;37mRPI [1;34mpipeline_base.cpp:1142 [0mUsing configuration file '/usr/share/libcamera/pipeline/rpi/vc4/rpi_apps.yaml'
+[0:00:34.653596367] [3954] [1;32m INFO [1;37mCamera [1;34mcamera.cpp:1183 [0mconfiguring streams: (0) 2304x1296-XBGR8888 (1) 2304x1296-SBGGR10_CSI2P
+[0:00:34.654144385] [3961] [1;32m INFO [1;37mRPI [1;34mvc4.cpp:608 [0mSensor: /base/soc/i2c0mux/i2c@1/imx708@1a - Selected sensor format: 2304x1296-SBGGR10_1X10 - Selected unicam format: 2304x1296-pBAA
+Traceback (most recent call last):
+  File "/home/raspi/camcorder/corder.py", line 58, in button_callback
+    picam2.start_recording(encoder, output)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1743, in start_recording
+    self.start_encoder(encoder, output, pts=pts, quality=quality, name=name)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1683, in start_encoder
+    _encoder.start(quality=quality)
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/encoder.py", line 227, in start
+    self._start()
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/h264_encoder.py", line 67, in _start
+    super()._start()
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/v4l2_encoder.py", line 149, in _start
+    fcntl.ioctl(self.vd, VIDIOC_STREAMON, typev)
+ProcessLookupError: [Errno 3] No such process
+Traceback (most recent call last):
+  File "/home/raspi/camcorder/corder.py", line 58, in button_callback
+    picam2.start_recording(encoder, output)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1743, in start_recording
+    self.start_encoder(encoder, output, pts=pts, quality=quality, name=name)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1683, in start_encoder
+    _encoder.start(quality=quality)
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/encoder.py", line 222, in start
+    raise RuntimeError("Encoder already running")
+RuntimeError: Encoder already running
+Traceback (most recent call last):
+  File "/home/raspi/camcorder/corder.py", line 58, in button_callback
+    picam2.start_recording(encoder, output)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1743, in start_recording
+    self.start_encoder(encoder, output, pts=pts, quality=quality, name=name)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1683, in start_encoder
+    _encoder.start(quality=quality)
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/encoder.py", line 222, in start
+    raise RuntimeError("Encoder already running")
+RuntimeError: Encoder already running
+Traceback (most recent call last):
+  File "/home/raspi/camcorder/corder.py", line 58, in button_callback
+    picam2.start_recording(encoder, output)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1743, in start_recording
+    self.start_encoder(encoder, output, pts=pts, quality=quality, name=name)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1683, in start_encoder
+    _encoder.start(quality=quality)
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/encoder.py", line 222, in start
+    raise RuntimeError("Encoder already running")
+RuntimeError: Encoder already running
+Traceback (most recent call last):
+  File "/home/raspi/camcorder/corder.py", line 58, in button_callback
+    picam2.start_recording(encoder, output)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1743, in start_recording
+    self.start_encoder(encoder, output, pts=pts, quality=quality, name=name)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1683, in start_encoder
+    _encoder.start(quality=quality)
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/encoder.py", line 222, in start
+    raise RuntimeError("Encoder already running")
+RuntimeError: Encoder already running
+Traceback (most recent call last):
+  File "/home/raspi/camcorder/corder.py", line 58, in button_callback
+    picam2.start_recording(encoder, output)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1743, in start_recording
+    self.start_encoder(encoder, output, pts=pts, quality=quality, name=name)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1683, in start_encoder
+    _encoder.start(quality=quality)
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/encoder.py", line 222, in start
+    raise RuntimeError("Encoder already running")
+RuntimeError: Encoder already running
+Traceback (most recent call last):
+  File "/home/raspi/camcorder/corder.py", line 58, in button_callback
+    picam2.start_recording(encoder, output)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1743, in start_recording
+    self.start_encoder(encoder, output, pts=pts, quality=quality, name=name)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1683, in start_encoder
+    _encoder.start(quality=quality)
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/encoder.py", line 222, in start
+    raise RuntimeError("Encoder already running")
+RuntimeError: Encoder already running
+Traceback (most recent call last):
+  File "/home/raspi/camcorder/corder.py", line 58, in button_callback
+    picam2.start_recording(encoder, output)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1743, in start_recording
+    self.start_encoder(encoder, output, pts=pts, quality=quality, name=name)
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 1683, in start_encoder
+    _encoder.start(quality=quality)
+  File "/usr/lib/python3/dist-packages/picamera2/encoders/encoder.py", line 222, in start
+    raise RuntimeError("Encoder already running")
+RuntimeError: Encoder already running

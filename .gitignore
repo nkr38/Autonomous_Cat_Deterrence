@@ -1,1 +1,3 @@
-*.pyc
+.vscode
+data/key_frames
+vision/__pycache__
