@@ -4,8 +4,9 @@ import atexit
 import time
 
 class StepperMotor:
-    def __init__(self, motor_pins: tuple[int]):
+    def __init__(self, motor_pins: tuple[int], gear_ratio: float = 1):
         self._motor_pins = motor_pins
+        self._gear_ratio = gear_ratio
 
         self._speed_variation_ratio: float = 1/64
         self._stride_angle: float = 5.625
@@ -44,7 +45,7 @@ class StepperMotor:
 
     @property
     def angle(self) -> float:
-        return self.current_step * self.angles_per_step
+        return self.current_step * self.angles_per_step / self._gear_ratio
 
     # rotates the server a specified number of steps
     # number_of_steps: the number if steps to spin
@@ -66,8 +67,25 @@ class StepperMotor:
         self.step(number_of_steps, time_between_steps)
 
     def set_angle(self, angle: float, time_between_steps: float = 0.001):
+        angle *= self._gear_ratio
+
         step = int(angle / self.angles_per_step)
         self.set_step(step, time_between_steps)
+
+    def add_angle(self, angle: float, time_between_steps: float = 0.001):
+        self.set_angle(self.angle + angle)
+
+class FireMechanism:
+    def __init__(self, pin):
+        self._pin = pin
+
+        GPIO.setup(self._pin, GPIO.OUT)
+        GPIO.output(motor_pins, GPIO.LOW)
+
+    def fire(self):
+        GPIO.output(motor_pins, GPIO.HIGH)
+        time.sleep(0.2)
+        GPIO.output(motor_pins, GPIO.LOW)
 
 class MotionSensor:
     def __init__(self, pin):
@@ -77,6 +95,13 @@ class MotionSensor:
 
     def is_motion(self):
         return GPIO.input(self._pin)
+
+class Gimble:
+    def __init__(self, pitch_pins, yaw_pins, fire_pin, motion_sensor_pin):
+        self.pitch_motor = StepperMotor(pitch_pins, 2)
+        self.yaw_motor = StepperMotor(yaw_pins, -3)
+        self.fire_mechanism = FireMechanism(fire_pin)
+        self.motion_sensor = MotionSensor(motion_sensor_pin)
 
 GPIO.setmode(GPIO.BCM)
 atexit.register(GPIO.cleanup)
