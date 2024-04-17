@@ -7,6 +7,8 @@ import time
 import numpy as np
 import math
 from edge_impulse_linux.image import ImageImpulseRunner
+from firmware.firmware import StepperMotor
+
 
 # Local Imports
 sys.path.append("/home/raspi/Autonomous_Cat_Deterrence")
@@ -84,10 +86,18 @@ def get_features_from_image(img, input_size):
     pixels = np.array(resized).flatten()
 
     for ix in range(0, len(pixels), 3):
-        rgb = pixels[ix:ix+3]
+        rgb = pixels[ix : ix + 3]
         features = np.append(features, (rgb[0] << 16) + (rgb[1] << 8) + rgb[2])
     return features.tolist(), resized
 
+def get_angles(cam: Camera, loc: list or tuple or np.ndarray):
+    x_angle = cam.fov[0] / cam.model_input_size[0] * loc[0]
+    y_angle = cam.fov[1] / cam.model_input_size[1] * loc[1]
+    if y_angle > 38:
+        y_angle = 38
+    elif y_angle < -40:
+        y_angle = -40
+    return x_angle, y_angle
 
 def sigint_handler(sig, frame):
     print("Interrupted")
@@ -103,96 +113,105 @@ print("MODEL: " + modelfile)
 
 
 with ImageImpulseRunner(modelfile) as runner, Camera() as camera:
-    try:
-        model_info = runner.init()
-        print(
-            'Loaded runner for "'
-            + model_info["project"]["owner"]
-            + " / "
-            + model_info["project"]["name"]
-            + '"'
-        )
-        labels = model_info["model_parameters"]["labels"]
-        # if camera_port:
-        #     videoCaptureDeviceId = int(args[1])
-        # else:
-        #     port_ids = get_webcams()
-        #     if len(port_ids) == 0:
-        #         raise Exception("Cannot find any webcams")
-        #     if len(port_ids) > 1:
-        #         raise Exception(
-        #             "Multiple cameras found. Add the camera port ID as a second argument to use to this script"
-        #         )
-        #     videoCaptureDeviceId = int(port_ids[0])
+    with StepperMotor((17, 18, 27, 22), 2) as ystep, StepperMotor((5, 6, 12, 13), -3) as xstep:
 
-        # camera = cv2.VideoCapture(videoCaptureDeviceId)
-        # camera = get_picam()
-        camera.start_recording()
-        ret = camera.capture_lores()
-        if ret.size > 0:
-            w, h = camera.lores_size
-
+        try:
+            model_info = runner.init()
             print(
-                f"Camera ~>  main:{camera.main_size}  lores:{camera.lores_size} selected."
+                'Loaded runner for "'
+                + model_info["project"]["owner"]
+                + " / "
+                + model_info["project"]["name"]
+                + '"'
             )
-            camera.stop_recording()
-        else:
-            print("No image from camera")
-            camera.stop_recording()
-            sys.exit(1)
+            labels = model_info["model_parameters"]["labels"]
+            # if camera_port:
+            #     videoCaptureDeviceId = int(args[1])
+            # else:
+            #     port_ids = get_webcams()
+            #     if len(port_ids) == 0:
+            #         raise Exception("Cannot find any webcams")
+            #     if len(port_ids) > 1:
+            #         raise Exception(
+            #             "Multiple cameras found. Add the camera port ID as a second argument to use to this script"
+            #         )
+            #     videoCaptureDeviceId = int(port_ids[0])
 
-        next_frame = 0  # limit to ~10 fps here
-    
-        for res, img in picam_classifier(camera, runner):
-            thresh_bb = []
+            # camera = cv2.VideoCapture(videoCaptureDeviceId)
+            # camera = get_picam()
+            camera.start_recording()
+            ret = camera.capture_lores()
+            if ret.size > 0:
+                w, h = camera.lores_size
 
-            # if next_frame > now():
-            #     time.sleep((next_frame - now()) / 1000)
-
-            if "bounding_boxes" in res["result"].keys():
-                for bb in res["result"]["bounding_boxes"]:
-                    if bb['value'] > 0.7:
-                        thresh_bb.append(bb)
                 print(
-                    "Found %d bounding boxes (%d ms.)"
-                    % (
-                        len(thresh_bb),
-                        res["timing"]["dsp"] + res["timing"]["classification"],
-                    )
+                    f"Camera ~>  main:{camera.main_size}  lores:{camera.lores_size} selected."
                 )
-                for bb in thresh_bb:
+                camera.stop_recording()
+            else:
+                print("No image from camera")
+                camera.stop_recording()
+                sys.exit(1)
+
+            next_frame = 0  # limit to ~10 fps here
+
+            for res, img in picam_classifier(camera, runner):
+                thresh_bb = []
+
+                # if next_frame > now():
+                #     time.sleep((next_frame - now()) / 1000)
+
+                if "bounding_boxes" in res["result"].keys():
+                    for bb in res["result"]["bounding_boxes"]:
+                        if bb["value"] > 0.7:
+                            thresh_bb.append(bb)
                     print(
-                        "\t%s (%.2f): x=%d y=%d w=%d h=%d"
+                        "Found %d bounding boxes (%d ms.)"
                         % (
-                            bb["label"],
-                            bb["value"],
-                            bb["x"],
-                            bb["y"],
-                            bb["width"],
-                            bb["height"],
+                            len(thresh_bb),
+                            res["timing"]["dsp"] + res["timing"]["classification"],
                         )
                     )
-                    img = cv2.rectangle(
-                        img,
-                        (bb["x"], bb["y"]),
-                        (bb["x"] + bb["width"], bb["y"] + bb["height"]),
-                        (255, 0, 0),
-                        1,
-                    )
-            if show_camera:
-                im2 = cv2.resize(img, dsize=(400, 400))
-                cv2.imshow("edgeimpulse", cv2.cvtColor(im2, cv2.COLOR_RGB2BGR))
-                print(
-                    "Found %d bounding boxes (%d ms.)"
-                    % (
-                        len(thresh_bb),
-                        res["timing"]["dsp"] + res["timing"]["classification"],
-                    )
-                )
-                if cv2.waitKey(1) == ord("q"):
-                    break
+                    for bb in thresh_bb:
+                        cat_loc = (bb["x"] + bb["width"]//2, bb["y"] + bb["height"]//2,)
+                        cat_loc = (cat_loc[0]-camera.model_input_size[0]//2,-(cat_loc[1]-camera.model_input_size[1]//2))
+                        angles = get_angles(camera, cat_loc)
+                        xstep.set_angle(angles[0])
+                        ystep.set_angle(angles[1])
+                        time.sleep(5)
 
-            next_frame = now() + 100
-    finally:
-        if runner:
-            runner.stop()
+                        print(
+                            "\t%s (%.2f): x=%d y=%d w=%d h=%d"
+                            % (
+                                bb["label"],
+                                bb["value"],
+                                bb["x"],
+                                bb["y"],
+                                bb["width"],
+                                bb["height"],
+                            )
+                        )
+                        img = cv2.rectangle(
+                            img,
+                            (bb["x"], bb["y"]),
+                            (bb["x"] + bb["width"], bb["y"] + bb["height"]),
+                            (255, 0, 0),
+                            1,
+                        )
+                if show_camera:
+                    im2 = cv2.resize(img, dsize=(400, 400))
+                    cv2.imshow("edgeimpulse", cv2.cvtColor(im2, cv2.COLOR_RGB2BGR))
+                    print(
+                        "Found %d bounding boxes (%d ms.)"
+                        % (
+                            len(thresh_bb),
+                            res["timing"]["dsp"] + res["timing"]["classification"],
+                        )
+                    )
+                    if cv2.waitKey(1) == ord("q"):
+                        break
+
+                next_frame = now() + 100
+        finally:
+            if runner:
+                runner.stop()
