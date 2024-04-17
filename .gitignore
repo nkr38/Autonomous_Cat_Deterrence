@@ -1,3 +1,4 @@
 .vscode
 data/key_frames
 vision/__pycache__
+**/*.pyc*
