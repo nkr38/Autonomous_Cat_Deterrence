@@ -22,6 +22,8 @@ class Camera:
         else:
             self.output = FfmpegOutput(f"vid_{now}.mp4")
         
+        self.fov = (102,67)
+
         self.main_size = main_size
         self.lores_size = lores_size
         self.vid_config = self.picam2.create_video_configuration(
