@@ -99,6 +99,12 @@ function formatMonthWeekDateTime(records, days){
         detectionCounts[getDateKey(dateTime)]++;
     });
 
+    for(const key in detectionCounts){
+        if(isNaN(detectionCounts[key])){
+            delete detectionCounts[key];
+        }
+    }
+
     return detectionCounts;
 }
 
@@ -119,6 +125,12 @@ function formatDateTimeHours(records){
         const hourString = getHourString(hour);
         detectionCounts[hourString]++;
     });
+
+    for(const key in detectionCounts){
+        if(isNaN(detectionCounts[key])){
+            delete detectionCounts[key];
+        }
+    }
 
     return detectionCounts;
 }
