@@ -1,0 +1,200 @@
+body {
+    background-color: rgb(255, 255, 129);
+    font-family: sans-serif;
+}
+  
+.container {
+    text-align: center;
+    margin-top: 50px;
+    cursor: pointer;
+}
+
+.serialbox{
+    text-align: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.logo {
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-style: italic;
+    font-family: "Monaco", monospace;
+}
+
+.text {
+font-size: 18px;
+margin-bottom: 10px;
+}
+
+.input {
+width: 200px;
+padding: 10px;
+border: 1px solid black;
+margin-bottom: 10px;
+}
+
+.button {
+background-color: blue;
+color: white;
+padding: 10px 20px;
+border: none;
+cursor: pointer;
+}
+
+.info-section {
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+.title{
+    font-size: 15px;
+    font-weight: bold;
+    font-family: "verdana", sans-serif;
+}
+
+table {
+    width: 100%;
+}
+
+table td {
+    padding: 5px;
+    text-align: center;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input:checked + .slider {
+    background-color: #00ff00;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #00ff00;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.filter-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px; /* Add space on top */
+}
+
+.filter-section select,
+.filter-section input,
+.filter-section button {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer; /* For select and button */
+}
+
+/* Style for button */
+.filter-section button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+}
+
+/* Hover effect for button */
+.filter-section button:hover {
+    background-color: #45a049;
+}
+
+/* Focus effect for input field */
+.filter-section input:focus {
+    border-color: #4CAF50; /* Green */
+}
+
+/* Customizing the dropdown arrow */
+.filter-section select {
+    appearance: none; /* Remove default arrow */
+    background-repeat: no-repeat;
+    background-position: right 10px center; /* Adjust position as needed */
+    padding-right: 30px; /* Reserve space for the arrow */
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  
+  .modal-content {
+    background-color: #ee4f4f;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+  }
+  
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }

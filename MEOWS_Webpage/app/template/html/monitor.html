@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEOWS</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container" id="headerDiv">
+        <h1 class="logo">MEOWS</h1>
+    </div>
+    <div class="info-section">
+        <table>
+            <tr>
+                <td colspan="1" class="title">Device Name</td>
+                <td colspan="1" class="title">Serial Number</td>
+                <td colspan="1" class="title">Disarmed/Armed</td>
+            </tr>
+            <tr>
+                <td colspan="1"><input type="text" id="deviceName" placeholder="Enter device name"></td>
+
+                <td colspan="1"><input type="text" id="serialNumber" value="" readonly></td>
+                <td colspan="1">
+                    <label class="switch">
+                        <input type="checkbox" id="armedSwitch">
+                        <span class="slider round"></span>
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                
+            </tr>
+        </table>
+    </div>
+
+    <!-- Filter controls -->
+    <div class="filter-section">
+        <select id="filterType">
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+        </select>
+        <button id="applyFilter">Apply Filter</button>
+    </div>
+
+    <!-- Canvas for graph -->
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='JS/monitor.js') }}"></script>
+</body>
+</html>
