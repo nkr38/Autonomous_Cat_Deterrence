@@ -80,12 +80,12 @@ class FireMechanism:
         self._pin = pin
 
         GPIO.setup(self._pin, GPIO.OUT)
-        GPIO.output(motor_pins, GPIO.LOW)
+        GPIO.output(self._pin, GPIO.LOW)
 
     def fire(self):
-        GPIO.output(motor_pins, GPIO.HIGH)
-        time.sleep(0.2)
-        GPIO.output(motor_pins, GPIO.LOW)
+        GPIO.output(self._pin, GPIO.HIGH)
+        time.sleep(0.50)
+        GPIO.output(self._pin, GPIO.LOW)
 
 class MotionSensor:
     def __init__(self, pin):
@@ -101,7 +101,7 @@ class Gimble:
         self.pitch_motor = StepperMotor(pitch_pins, 2)
         self.yaw_motor = StepperMotor(yaw_pins, -3)
         self.fire_mechanism = FireMechanism(fire_pin)
-        self.motion_sensor = MotionSensor(motion_sensor_pin)
+        # self.motion_sensor = MotionSensor(motion_sensor_pin)
 
 GPIO.setmode(GPIO.BCM)
 atexit.register(GPIO.cleanup)
