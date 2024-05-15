@@ -8,6 +8,7 @@ import numpy as np
 import math
 from edge_impulse_linux.image import ImageImpulseRunner
 from firmware.firmware import StepperMotor
+from firmware.firmware import FireMechanism
 
 
 # Local Imports
@@ -16,7 +17,8 @@ from vision.Camera import Camera
 
 
 modelfile = (
-    "/home/raspi/Autonomous_Cat_Deterrence/ml/fomo/models/catfomo2-linux-aarch64-v3.eim"
+    "/home/raspi/Autonomous_Cat_Deterrence/ml/fomo/models/catfomo2-linux-aarch64-v6-large.eim"
+    #"/home/raspi/Autonomous_Cat_Deterrence/ml/fomo/models/catfomo2-linux-aarch64-v3.eim"
 )
 # If you have multiple webcams, replace None with the camera port you desire, get_webcams() can help find this
 camera_port = None
@@ -24,7 +26,7 @@ camera_port = None
 
 runner = None
 # if you don't want to see a camera preview, set this to False
-show_camera = True
+show_camera = False
 if sys.platform == "linux" and not os.environ.get("DISPLAY"):
     show_camera = False
 
@@ -111,9 +113,15 @@ signal.signal(signal.SIGINT, sigint_handler)
 
 print("MODEL: " + modelfile)
 
-
-with ImageImpulseRunner(modelfile) as runner, Camera() as camera:
+count = 0
+last_loc = ()
+last_loc_sec = time.time()
+dist_thresh = 10
+xangle = 0
+yangle = 0
+with ImageImpulseRunner(modelfile) as runner, Camera(model_input_size=(172,172)) as camera:
     with StepperMotor((17, 18, 27, 22), 2) as ystep, StepperMotor((5, 6, 12, 13), -3) as xstep:
+        # with FireMechanism() as firemech:
 
         try:
             model_info = runner.init()
@@ -158,13 +166,16 @@ with ImageImpulseRunner(modelfile) as runner, Camera() as camera:
             for res, img in picam_classifier(camera, runner):
                 thresh_bb = []
 
-                # if next_frame > now():
-                #     time.sleep((next_frame - now()) / 1000)
-
-                if "bounding_boxes" in res["result"].keys():
-                    for bb in res["result"]["bounding_boxes"]:
-                        if bb["value"] > 0.7:
-                            thresh_bb.append(bb)
+                if time.time() - last_loc_sec > 5:
+                    count = 0
+                    last_loc = ()
+                    xstep.set_angle(xangle)
+                    ystep.set_angle(yangle)
+                    
+                if "bounding_boxes" in res["result"].keys() and len(res["result"]["bounding_boxes"]):
+                    bb = res["result"]["bounding_boxes"][0]
+                    if bb["value"] > 0.7:
+                        thresh_bb.append(bb)
                     print(
                         "Found %d bounding boxes (%d ms.)"
                         % (
@@ -175,10 +186,28 @@ with ImageImpulseRunner(modelfile) as runner, Camera() as camera:
                     for bb in thresh_bb:
                         cat_loc = (bb["x"] + bb["width"]//2, bb["y"] + bb["height"]//2,)
                         cat_loc = (cat_loc[0]-camera.model_input_size[0]//2,-(cat_loc[1]-camera.model_input_size[1]//2))
-                        angles = get_angles(camera, cat_loc)
-                        xstep.set_angle(angles[0])
-                        ystep.set_angle(angles[1])
-                        time.sleep(5)
+                        if len(last_loc) < 2:
+                            count += 1
+                            last_loc = cat_loc
+                            last_loc_sec = time.time()
+                        else:
+                            dist = np.sqrt((cat_loc[0]-last_loc[0])**2 + (cat_loc[1]-last_loc[1])**2)
+                            if dist < dist_thresh:
+                                count += 1
+                                last_loc = cat_loc
+                                last_loc_sec = time.time()
+
+                        if count >= 7:
+                            angles = get_angles(camera, cat_loc)
+                            xangle += angles[0]
+                            yangle += -angles[1]
+                            xstep.set_angle(angles[0])
+                            ystep.set_angle(-angles[1])
+                            print(f"moved to {angles=}")
+                        
+
+                        # firemech.fire()
+                        # time.sleep(2)
 
                         print(
                             "\t%s (%.2f): x=%d y=%d w=%d h=%d"
