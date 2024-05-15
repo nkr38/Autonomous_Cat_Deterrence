@@ -1,6 +1,7 @@
 from picamera2.encoders import H264Encoder
 from picamera2.outputs import FfmpegOutput
 from picamera2 import Picamera2
+import libcamera
 import numpy as np
 import datetime
 from pathlib import Path
@@ -27,8 +28,10 @@ class Camera:
         self.main_size = main_size
         self.lores_size = lores_size
         self.vid_config = self.picam2.create_video_configuration(
-            main={"size": main_size, "format": "RGB888"}, lores={"size": lores_size}
+            main={"size": main_size, "format": "RGB888"}, lores={"size": lores_size},
         )
+        self.vid_config["transform"] = libcamera.Transform(vflip=1)
+
         self.picam2.configure(self.vid_config)
 
         self.model_input_size = model_input_size
