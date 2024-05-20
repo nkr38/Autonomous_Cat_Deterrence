@@ -11,7 +11,7 @@ import numpy as np
 from edge_impulse_linux.image import ImageImpulseRunner
 
 
-modelfile = '/home/raspi/Autonomous_Cat_Deterrence/ml/fomo/models/catfomo2-linux-aarch64-v3.eim'
+modelfile = '/home/raspi/Autonomous_Cat_Deterrence/ml/fomo/models/catfomo2-linux-aarch64-v6-large.eim'
 videofile = '/home/raspi/Autonomous_Cat_Deterrence/data/benchmark_vids/cat_counter5.mp4'
 
 
@@ -61,7 +61,7 @@ with ImageImpulseRunner(modelfile) as runner:
         while img.size != 0:
             # imread returns images in BGR format, so we need to convert to RGB
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-            img = cv2.resize(img, (96,96))
+            img = cv2.resize(img, (172,172))
 
             # get_features_from_image also takes a crop direction arguments in case you don't have square images
             features, cropped = runner.get_features_from_image(img)
