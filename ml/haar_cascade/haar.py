@@ -1,20 +1,28 @@
 import cv2
-from firmware.firmware import StepperMotor
-from firmware.firmware import FireMechanism
+from firmware.firmware import StepperMotor, FireMechanism, MotionSensor
 import sys
 sys.path.append("/home/raspi/Autonomous_Cat_Deterrence")
-from time import sleep
-
+from time import sleep, time
+import numpy as np
 from vision.Camera import Camera
+import atexit
 
+VERBOSE = True
 # Classifier
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalcatface.xml')
 
-def get_angles(cam: Camera, loc: list or tuple or np.ndarray, input_size: tuple, xstep, ystep):
+def capture_and_sense(cam: Camera):
+    frame = cam.capture_main()
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = faceCascade.detectMultiScale3(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE, outputRejectLevels=True)
+    return faces, frame, gray
+
+
+def get_angles(cam: Camera, loc: list or tuple or np.ndarray, input_size: tuple, x_step, y_step):
     x_inc = cam.fov[0] / input_size[0] * loc[0]
     y_inc = cam.fov[1] / input_size[1] * loc[1]
-    x_angle = x_inc + xstep.angle
-    y_angle = y_inc + ystep.angle
+    x_angle = x_inc + x_step.angle
+    y_angle = y_inc + y_step.angle
     if y_angle > 38:
         y_angle = 38
     elif y_angle < -40:
@@ -23,61 +31,81 @@ def get_angles(cam: Camera, loc: list or tuple or np.ndarray, input_size: tuple,
         x_angle = 90
     elif x_angle < -90:
         x_angle = -90
-    return x_angle, y_angle
+    return x_inc, y_inc
 
-def picam_classifier(camera, runner):
-    camera.start_recording()
-    while not camera.closed and not runner.closed:
-        img = camera.capture_lores()
-        if img.size > 0:
-            features, resized = get_features_from_image(img, camera.model_input_size)
-            res = runner.classify(features)
-            yield res, resized
-    camera.stop_recording()
+def dist_to_center(x_centered, y_centered):
+    return np.sqrt((x_centered)**2 + (y_centered)**2) 
 
-
-# Video capture source
-cap = cv2.VideoCapture(2)
-with Camera() as cam:
-    with StepperMotor((17, 18, 27, 22), 2) as ystep, StepperMotor((5, 6, 12, 13), -3) as xstep:#, FireMechanism(26) as trigger:
+def search_and_fire(cam: Camera):  
+    time_last_seen = 0
+    with StepperMotor((9, 11, 25, 8), 2) as y_step, StepperMotor((5, 6, 12, 13), -3) as x_step:
+        trigger = FireMechanism(26)
+        print("Entering Main Loop")
         while True:
-
             # Capture frame
-            # ret, frame = cap.read()
-            cam.start_recording()
-            frame = cam.capture_main()
-            cam.stop_recording()
-
-
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            faces = faceCascade.detectMultiScale3(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30), flags=cv2.CASCADE_SCALE_IMAGE, outputRejectLevels=True)
-
+            print("captured frame")
+            faces, frame, gray = capture_and_sense(cam)
+            
             # Draw a rectangle and confidence
-            for (x, y, w, h) in faces[0]:
-                cv2.putText(frame, str(int(faces[2][0])) + '%', (x,y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
+            if len(faces[0]) > 0:
+                # print(faces[0][0].flatten())
+                time_last_seen = time()
+                if VERBOSE:
+                    print("cat face seen")
+                x, y, w, h = faces[0][0].flatten().tolist()
+
+                cv2.putText(frame, f"{faces[2][0]:.2f} %", (x,y-10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2, cv2.LINE_AA)
                 cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
                 # cv2.rectangle(frame, (0, 0), (20, 20), (255, 255, 0), 2)
                 cv2.rectangle(frame, (cam.main_size[0]//2 + 5, cam.main_size[1]//2 + 5),(cam.main_size[0]//2 - 5, cam.main_size[1]//2 - 5), (255, 0, 255), 2)
 
-                newx = x - cam.main_size[0]//2 + 1/2 * w
-                newy = y - cam.main_size[1]//2 + 1/2 * h
-                xangle, yangle = get_angles(cam, (newx, newy), gray.shape[:2], xstep, ystep)
-                print(f"x = {newx}, y = {newy}")
-                print(f"x_ang = {xangle}, y_ang = {yangle}")
+                x_centered = x - cam.main_size[0]//2 + 1/2 * w
+                y_centered = y - cam.main_size[1]//2 + 1/2 * h
+
+                if dist_to_center(x_centered, y_centered) <= 30:
+                    center_count += 10
+                    if center_count >= 3:
+                        if VERBOSE:
+                            print("FIRING and sleeping for 3 secs...")
+                        trigger.fire()
+                        sleep(3)
+                else:
+                    center_count = 0
+                x_angle, y_angle = get_angles(cam, (x_centered, y_centered), gray.shape[:2], x_step, y_step)
+                # print(f"x = {x_centered}, y = {y_centered}")
+                # print(f"x_ang = {x_angle}, y_ang = {y_angle}")
 
 
-                xstep.set_angle(-xangle)
-                ystep.set_angle(-yangle)
+                x_step.add_angle(-x_angle*3/5)
+                y_step.add_angle(-y_angle*3/5)
                 cv2.imshow("cat", frame)
-                sleep(1)
+
+                sleep(0.5)
                 
+            else:
+                if time_last_seen == 0:
+                    continue
+                elif time() - time_last_seen > 10:
+                    break
+    if VERBOSE:
+        print("Going to sleep")
+    sleep(3)
 
-            # Display the resulting frame live
-            #cv2.imshow('Live Cat Detection', frame)
 
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
+
+if __name__ == "__main__":
+    motion_sensor = MotionSensor(2)
+    with Camera(main_size=(960,540)) as cam:
+        try:
+            while True:
+                if motion_sensor.is_motion():
+                    if VERBOSE:
+                        print("Motion Detected!")
+                    search_and_fire(cam)
+                sleep(0.5)
+        except KeyboardInterrupt:
+            cam.stop_recording()
+            sys.exit(0)
 
 # When everything is done, release the capture
-#cap.release()
 cv2.destroyAllWindows()
