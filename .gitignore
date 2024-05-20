@@ -3,3 +3,5 @@ data/key_frames
 vision/__pycache__
 **/*.pyc*
 **/*.py.swp
+**/*.mp4
+**/*.jpg
