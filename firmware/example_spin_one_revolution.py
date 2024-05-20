@@ -1,9 +1,10 @@
 from firmware import StepperMotor
+import RPi.GPIO as GPIO
 
 import time
 
 def main():
-    with StepperMotor((17, 18, 27, 22), 2) as pitch_motor, StepperMotor((5, 6, 12, 13), -3) as yaw_motor:
+    with StepperMotor((9, 11, 25, 8), 2) as pitch_motor, StepperMotor((5, 6, 12, 13), -3) as yaw_motor:
         while True:
             cmd_text = input()
             args = cmd_text.split(' ')
@@ -34,3 +35,5 @@ def main():
 
 if __name__ == '__main__':
     main()
+    GPIO.cleanup()
+

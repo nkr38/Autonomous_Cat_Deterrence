@@ -82,10 +82,14 @@ class FireMechanism:
         GPIO.setup(self._pin, GPIO.OUT)
         GPIO.output(self._pin, GPIO.LOW)
 
-    def fire(self):
+    def fire(self, tsleep : float = 0.5):
         GPIO.output(self._pin, GPIO.HIGH)
-        time.sleep(0.50)
+        time.sleep(tsleep)
         GPIO.output(self._pin, GPIO.LOW)
+    def __enter__(self):
+        return self
+    def __exit__(self):
+        pass
 
 class MotionSensor:
     def __init__(self, pin):
