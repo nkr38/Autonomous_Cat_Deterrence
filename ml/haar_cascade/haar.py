@@ -1,15 +1,20 @@
 import cv2
 from firmware.firmware import StepperMotor, FireMechanism, MotionSensor
+from MEOWS_Webpage.app.db import *
 import sys
 sys.path.append("/home/raspi/Autonomous_Cat_Deterrence")
 from time import sleep, time
 import numpy as np
 from vision.Camera import Camera
+import datetime
 import atexit
 
 VERBOSE = True
+SERIAL_NUMBER = 1225357956
 # Classifier
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalcatface.xml')
+db = DataBase()
+db.connect_DB()
 
 def capture_and_sense(cam: Camera):
     frame = cam.capture_main()
@@ -67,6 +72,8 @@ def search_and_fire(cam: Camera):
                     if center_count >= 3:
                         if VERBOSE:
                             print("FIRING and sleeping for 3 secs...")
+                        now = datetime.datetime.now()
+                        db.add_rows('detection', {'serial_number': SERIAL_NUMBER, 'detection_datetime': now})
                         trigger.fire()
                         sleep(3)
                 else:

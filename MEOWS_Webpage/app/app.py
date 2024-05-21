@@ -120,9 +120,9 @@ if __name__ == "__main__":
     for i in range(len(AVAILABLE_SERIALS)):
         db.add_rows('device', {'serial_number': AVAILABLE_SERIALS[i], 'device_name': f'device{i+1}', 'active': True})
 
-    add_test_data()
+    #add_test_data()
     #db.get_rows(db.conn.cursor())
     #print(db.get_rows('device'))
-    print(db.get_rows('detection'))
+    #print(db.get_rows('detection'))
     app.run(debug=True)
     db.disconnect_DB()
