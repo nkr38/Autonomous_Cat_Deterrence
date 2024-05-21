@@ -10,6 +10,7 @@ import datetime
 import atexit
 
 VERBOSE = True
+ENABLED = True
 SERIAL_NUMBER = 1225357956
 # Classifier
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalcatface.xml')
@@ -105,10 +106,19 @@ if __name__ == "__main__":
     with Camera(main_size=(960,540)) as cam:
         try:
             while True:
-                if motion_sensor.is_motion():
+                if motion_sensor.is_motion() and ENABLED:
                     if VERBOSE:
                         print("Motion Detected!")
                     search_and_fire(cam)
+
+                    # Check disabled flag
+                    sqlStatement = """SELECT * FROM device WHERE serial_number = ?"""
+                    parameters = (SERIAL_NUMBER,)
+                    records = db.get_one(sqlStatement, parameters=parameters)
+                    if records[2] == 0:
+                        ENABLED = False
+                    else:
+                        ENABLED = True
                 sleep(0.5)
         except KeyboardInterrupt:
             cam.stop_recording()

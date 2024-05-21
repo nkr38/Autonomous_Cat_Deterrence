@@ -27,6 +27,12 @@ class DataBase:
         cursor.execute(query, parameters)
         record = cursor.fetchall()
         return record
+    
+    def get_one(self, query, parameters = ()):
+        cursor = self.conn.cursor()
+        cursor.execute(query, parameters)
+        record = cursor.fetchone()
+        return record
 
     def get_rows(self, table_name):
         cursor = self.conn.cursor()
