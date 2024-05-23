@@ -73,9 +73,14 @@ def search_and_fire(cam: Camera):
                     if center_count >= 3:
                         if VERBOSE:
                             print("FIRING and sleeping for 3 secs...")
+<<<<<<< HEAD
                         now = datetime.datetime.now()
                         db.add_rows('detection', {'serial_number': SERIAL_NUMBER, 'detection_datetime': now})
                         trigger.fire()
+=======
+                        trigger.fire(0.3)
+                        trigger.fire(0.2)
+>>>>>>> 6384265 (fix firing & remove imshow)
                         sleep(3)
                 else:
                     center_count = 0
@@ -86,7 +91,7 @@ def search_and_fire(cam: Camera):
 
                 x_step.add_angle(-x_angle*3/5)
                 y_step.add_angle(-y_angle*3/5)
-                cv2.imshow("cat", frame)
+                #cv2.imshow("cat", frame)
 
                 sleep(0.5)
                 
