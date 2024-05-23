@@ -18,10 +18,10 @@ class Camera:
         self.encoder = H264Encoder()
 
         now = datetime.datetime.now().strftime("%H-%M-%S_%d-%m-%Y")
-        # if Path("/media/raspi/catdrive/").is_dir():
-        #     self.output = FfmpegOutput(f"/media/raspi/catdrive/vid_{now}.mp4")
-        # else:
-        self.output = FfmpegOutput(f"vid_{now}.mp4")
+        if Path("/media/raspi/catdrive/").is_dir():
+        	self.output = FfmpegOutput(f"/media/raspi/catdrive/vid_{now}.mp4")
+        else:
+	        self.output = FfmpegOutput(f"vid_{now}.mp4")
         
         self.fov = (102,67)
         self.fov = (90,67)
