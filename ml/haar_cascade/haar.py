@@ -1,6 +1,5 @@
 import cv2
 from firmware.firmware import StepperMotor, FireMechanism, MotionSensor
-from app.db import *
 import sys
 sys.path.append("/home/raspi/Autonomous_Cat_Deterrence")
 from time import sleep, time
@@ -73,12 +72,11 @@ def search_and_fire(cam: Camera):
                         if VERBOSE:
                             print("FIRING and sleeping for 3 secs...")
                         now = datetime.datetime.now()
+                        send_data_to_db(now)
 
                         trigger.fire(0.3)
                         trigger.fire(0.2)
 
-                        send_data_to_db(now)
-                        trigger.fire()
                         sleep(3)
                 else:
                     center_count = 0
