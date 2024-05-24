@@ -99,6 +99,22 @@ def get_past_week_data():
     records = db.get_data(sqlStatement, parameters=parameters)
     return jsonify({'records': records}), 200
 
+@app.route('/sendData', methods=['POST'])
+def sendData():
+    serial = request.json.get('serial_number')
+    detection_datetime = request.json.get('detection_datetime')
+    date = datetime.datetime.fromisoformat(detection_datetime)
+    db.add_rows('detection', {'serial_number': serial, 'detection_datetime': date})
+    return jsonify({}), 200
+
+@app.route('/get_active_state', methods=['POST'])
+def get_active_state():
+    serial = request.json.get('serial_number')
+    sqlStatement = """SELECT * FROM device WHERE serial_number = ?"""
+    parameters = (serial,)
+    records = db.get_one(sqlStatement, parameters=parameters)
+    return jsonify(records[2]), 200
+
 def update_model():
     record = db.get_device_info('device', modelObj.serialNum)
     if not record:
@@ -124,5 +140,5 @@ if __name__ == "__main__":
     #db.get_rows(db.conn.cursor())
     #print(db.get_rows('device'))
     #print(db.get_rows('detection'))
-    app.run(debug=True)
+    app.run(port=5000, debug=True)
     db.disconnect_DB()

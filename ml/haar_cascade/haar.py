@@ -7,6 +7,7 @@ from time import sleep, time
 import numpy as np
 from vision.Camera import Camera
 import datetime
+import requests
 import atexit
 
 VERBOSE = True
@@ -14,8 +15,6 @@ ENABLED = True
 SERIAL_NUMBER = 1225357956
 # Classifier
 faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalcatface.xml')
-db = DataBase()
-db.connect_DB()
 
 def capture_and_sense(cam: Camera):
     frame = cam.capture_main()
@@ -74,7 +73,7 @@ def search_and_fire(cam: Camera):
                         if VERBOSE:
                             print("FIRING and sleeping for 3 secs...")
                         now = datetime.datetime.now()
-                        db.add_rows('detection', {'serial_number': SERIAL_NUMBER, 'detection_datetime': now})
+                        send_data_to_db(now)
                         trigger.fire()
                         sleep(3)
                 else:
@@ -99,7 +98,25 @@ def search_and_fire(cam: Camera):
         print("Going to sleep")
     sleep(3)
 
-
+def send_data_to_db(now):
+    url = 'http://localhost:5000/sendData'
+    now_str = now.isoformat()
+    payload = {'serial_number': SERIAL_NUMBER, 'detection_datetime': now_str}
+    response = requests.post(url, json=payload)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        raise Exception(f"query failed")
+    
+def get_active_data():
+    url = 'http://localhost:5000/get_active_state'
+    payload = {'serial_number': SERIAL_NUMBER}
+    response = requests.post(url, json=payload)
+    if response.status_code == 200:
+        state = response.json()
+    else:
+        raise Exception(f"query failed")
+    return state
 
 if __name__ == "__main__":
     motion_sensor = MotionSensor(2)
@@ -112,13 +129,14 @@ if __name__ == "__main__":
                     search_and_fire(cam)
 
                     # Check disabled flag
-                    sqlStatement = """SELECT * FROM device WHERE serial_number = ?"""
-                    parameters = (SERIAL_NUMBER,)
-                    records = db.get_one(sqlStatement, parameters=parameters)
-                    if records[2] == 0:
-                        ENABLED = False
-                    else:
-                        ENABLED = True
+                    #sqlStatement = """SELECT * FROM device WHERE serial_number = ?"""
+                    #parameters = (SERIAL_NUMBER,)
+                    #records = db.get_one(sqlStatement, parameters=parameters)
+                records = get_active_data()
+                if records == 0:
+                    ENABLED = False
+                else:
+                    ENABLED = True
                 sleep(0.5)
         except KeyboardInterrupt:
             cam.stop_recording()
