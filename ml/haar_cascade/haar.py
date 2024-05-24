@@ -1,6 +1,6 @@
 import cv2
 from firmware.firmware import StepperMotor, FireMechanism, MotionSensor
-from MEOWS_Webpage.app.db import *
+from app.db import *
 import sys
 sys.path.append("/home/raspi/Autonomous_Cat_Deterrence")
 from time import sleep, time
@@ -73,6 +73,10 @@ def search_and_fire(cam: Camera):
                         if VERBOSE:
                             print("FIRING and sleeping for 3 secs...")
                         now = datetime.datetime.now()
+
+                        trigger.fire(0.3)
+                        trigger.fire(0.2)
+
                         send_data_to_db(now)
                         trigger.fire()
                         sleep(3)
@@ -85,7 +89,7 @@ def search_and_fire(cam: Camera):
 
                 x_step.add_angle(-x_angle*3/5)
                 y_step.add_angle(-y_angle*3/5)
-                cv2.imshow("cat", frame)
+                #cv2.imshow("cat", frame)
 
                 sleep(0.5)
                 
