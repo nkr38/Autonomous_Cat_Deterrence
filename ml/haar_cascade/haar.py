@@ -1,6 +1,6 @@
 import cv2
 from firmware.firmware import StepperMotor, FireMechanism, MotionSensor
-from MEOWS_Webpage.app.db import *
+from app.db import *
 import sys
 sys.path.append("/home/raspi/Autonomous_Cat_Deterrence")
 from time import sleep, time
